@@ -174,6 +174,16 @@ table.rt tr:hover td{background:var(--surface2)}
 .gf-country-search:focus{border-color:var(--text)}
 .gf-clear-btn{font-size:11px;padding:3px 10px;border:1.5px solid var(--border);border-radius:4px;background:none;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .12s}
 .gf-clear-btn:hover{background:var(--surface2);color:var(--text)}
+/* ── Link to China Team MOU Dashboard ── */
+.cn-link{display:flex;align-items:center;gap:12px;padding:12px 18px;border:1.5px solid rgba(200,16,46,.3);border-radius:10px;background:rgba(200,16,46,.05);color:var(--text);text-decoration:none;transition:background .15s,border-color .15s}
+.cn-link:hover{background:rgba(200,16,46,.1);border-color:rgba(200,16,46,.55)}
+.cn-link:focus-visible{outline:2px solid #c8102e;outline-offset:2px}
+.cn-link .cn-flag{font-size:1.5rem;line-height:1}
+.cn-link .cn-txt{display:flex;flex-direction:column;gap:2px}
+.cn-link .cn-t1{font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700;color:#c8102e}
+.cn-link .cn-t2{font-size:11px;color:var(--muted)}
+.cn-link .cn-arrow{font-size:16px;color:#c8102e;margin-left:4px}
+@media(max-width:600px){.hdr{padding:1.5rem 1.25rem 1.25rem}.cn-link{width:100%}}
 </style>
 </head>
 <body>
@@ -192,6 +202,11 @@ table.rt tr:hover td{background:var(--surface2)}
       <div class="cbadge cb-woo"><span class="cdot" style="background:var(--woo)"></span>Woosong</div>
       <div class="cbadge cb-main"><span class="cdot" style="background:var(--main)"></span>Main Campus</div>
     </div>
+    <a class="cn-link" href="https://joeyaj.github.io/China-MOU-Master--Woosong-University/" target="_blank" rel="noopener" title="Open the China Team MOU Dashboard in a new tab">
+      <span class="cn-flag" aria-hidden="true">🇨🇳</span>
+      <span class="cn-txt"><span class="cn-t1">China Team MOU Dashboard</span><span class="cn-t2">중국팀 MOU 대시보드</span></span>
+      <span class="cn-arrow" aria-hidden="true">↗</span>
+    </a>
   </div>
 </div>
 <nav class="nav" id="mainNav"></nav>
