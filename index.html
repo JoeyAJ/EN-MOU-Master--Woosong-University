@@ -233,8 +233,8 @@ table.rt tr:hover td{background:var(--surface2)}
    Paste the /exec URL here after deploying EN/Code.gs. Until then the page uses the old proxy path. */
 const LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwsVss5a1Z4gq-Oad6h3uyl2WFteGLmBbWkDuXXVUmg91_-_zBm_RlZQAxn0OeVxWmqmQ/exec';
 const POLL_MS = 15000;
-const SHEET_ID = '1hwOzbO70StiGYrSiNEzeU2FzPXTWxvxJLr1l0Cf8J4c';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+const SHEET_ID = '1bQjCmDQguZesDrqG3Rl3ZwImnNCgM4cKN4efv1rSle0';   // IR MOU List Updated 2026-09
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Valid`;
 const PROXIES = [
   'https://corsproxy.io/?',
   'https://api.allorigins.win/raw?url='
@@ -290,7 +290,7 @@ function csvParse(txt){
 
 function crunch(allRows){
   // allRows includes header row; filter to Active rows (col 17 === 'Active')
-  const rows=allRows.slice(1).filter(r=>r.length>=18&&r[17].trim()==='Active');
+  const rows=allRows.slice(1).filter(r=>r.length>=18&&String(r[17]).trim().toLowerCase()==='active');
   const OR={},AR={},YD={};
   const TSKEYS=['Exchange','Study Abroad','Dual Degree','Transfer','iDegree'];
   const TS={};
