@@ -184,6 +184,12 @@ table.rt tr:hover td{background:var(--surface2)}
 .cn-link .cn-t2{font-size:11px;color:var(--muted)}
 .cn-link .cn-arrow{font-size:16px;color:#c8102e;margin-left:4px}
 @media(max-width:600px){.hdr{padding:1.5rem 1.25rem 1.25rem}.cn-link{width:100%}}
+#syncPill{display:inline-flex;align-self:flex-start;justify-self:start;width:max-content!important;max-width:100%;align-items:center;gap:7px;margin:0 0 6px;height:30px;padding:0 12px;border:1px solid var(--border);border-radius:999px;background:transparent;font-family:inherit;font-weight:600;font-size:12px;line-height:1;color:#7a7368;cursor:pointer}
+#syncPill .sp-dot{width:7px;height:7px;border-radius:50%;background:#c9c3b8}
+#syncPill[data-state=ok] .sp-dot{background:#0f9b6e;animation:spPulse 2.4s ease-in-out infinite}
+#syncPill[data-state=warn]{color:#92400e;border-color:#fcd34d;background:#fffbeb}#syncPill[data-state=warn] .sp-dot{background:#f59e0b}
+#syncPill[data-state=bad]{color:#991b1b;border-color:#fecaca;background:#fff1f2}#syncPill[data-state=bad] .sp-dot{background:#dc2626}
+@keyframes spPulse{0%,100%{opacity:1}50%{opacity:.35}}@media (prefers-reduced-motion:reduce){#syncPill .sp-dot{animation:none}}
 </style>
 </head>
 <body>
@@ -192,6 +198,7 @@ table.rt tr:hover td{background:var(--surface2)}
   <div class="hdr-left">
     <div class="eyebrow"><span class="pulse"></span>Active MOUs only &middot; Woosong University IR</div>
     <h1>Active Partnerships</h1>
+    <div style="display:flex"><button id="syncPill" type="button" onclick="syncPillClick()" style="display:none"><span class="sp-dot"></span><span></span></button></div>
     <p id="hdr-sub">Active MOU database &mdash; regions, types &amp; signed year analysis</p>
   </div>
   <div class="hdr-right">
@@ -222,6 +229,10 @@ table.rt tr:hover td{background:var(--surface2)}
   }
 })();
 /* ── LIVE DATA CONFIG ── */
+/* Apps Script web app bound to the source sheet (preferred: direct, no proxy, auto-refresh).
+   Paste the /exec URL here after deploying EN/Code.gs. Until then the page uses the old proxy path. */
+const LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwsVss5a1Z4gq-Oad6h3uyl2WFteGLmBbWkDuXXVUmg91_-_zBm_RlZQAxn0OeVxWmqmQ/exec';
+const POLL_MS = 15000;
 const SHEET_ID = '1hwOzbO70StiGYrSiNEzeU2FzPXTWxvxJLr1l0Cf8J4c';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 const PROXIES = [
@@ -234,6 +245,48 @@ const _EMBEDDED = {"OR":{"China":{"Exchange":{"Woosong":15,"SolBridge":7},"Gener
 const CS=['SolBridge','Woosong','Main Campus'];
 const ctObj=o=>CS.reduce((s,k)=>s+(o&&o[k]||0),0);
 const inc=(o,k,v=1)=>{o[k]=(o[k]||0)+v;};
+
+/* ── NORMALIZERS (were missing — the live path could never run without them) ── */
+function normCampus(v){
+  const s=String(v||'').trim().toLowerCase();
+  if(!s)return null;
+  if(s.includes('sol'))return 'SolBridge';
+  if(s.includes('main'))return 'Main Campus';
+  if(s.includes('woosong'))return 'Woosong';
+  return null;
+}
+function normType(raw){
+  const s=String(raw||'').toLowerCase();
+  if(/\btransfer\b/.test(s))return 'Transfer';
+  if(/idegree/.test(s))return 'iDegree';
+  if(/study abroad/.test(s))return 'Study Abroad';
+  if(/dual degree/.test(s))return 'Dual Degree';
+  if(/\d(\.\d)?\s*\+\s*\d/.test(s)&&!/post graduate/.test(s))return 'Dual Degree';
+  if(/\bexchange\b/.test(s))return 'Exchange';
+  if(/\bgeneral\b/.test(s))return 'General';
+  return 'Other';
+}
+function normDir(raw){
+  const s=String(raw||'').toLowerCase();
+  if(/\breciprocal\b/.test(s))return 'Reciprocal';
+  if(/\binbound\b/.test(s))return 'Inbound';
+  if(/\boutbound\b/.test(s))return 'Outbound';
+  return 'Unspecified';
+}
+function normExp(ed){return /indefinite/i.test(String(ed||''))?'Indefinite':'Ongoing'}
+function csvParse(txt){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;
+    else if(c===','){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}
+    else f+=c;
+  }
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
 
 function crunch(allRows){
   // allRows includes header row; filter to Active rows (col 17 === 'Active')
@@ -348,15 +401,74 @@ function setBanner(mode,rowCount){
   const ts=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
   if(!p)return;
   if(mode==='live'){
-    p.innerHTML=`Active MOU database &mdash; <span style="color:var(--active);font-weight:600">&#9679; Live · ${rowCount} records · refreshed ${ts}</span> <a href="${SHEET_URL}" target="_blank" style="color:var(--active);font-size:12px;margin-left:4px" title="Open source sheet">↗ Sheet</a>`;
+    p.innerHTML=`Active MOU database &mdash; <span style="color:var(--active);font-weight:600">&#9679; Live · ${rowCount} records · refreshed ${ts}</span> <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank" style="color:var(--active);font-size:12px;margin-left:4px" title="Open source sheet">↗ Sheet</a>`;
   }else{
     p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; Snapshot Sep 2026</span> <button onclick="tryLive()" style="margin-left:8px;font-size:11px;padding:2px 8px;border:1.5px solid var(--border);background:none;border-radius:4px;cursor:pointer;font-family:inherit">↺ Retry live</button>`;
   }
 }
 
 /* ── LOAD FLOW ── */
+/* ── AUTO-SYNC (Apps Script) ── */
+let DATA_SOURCE='', DATA_HASH='', LAST_SYNC_AT=0, SYNC_OK=true, POLL_BUSY=false, PENDING=null;
+function apiConfigured(){return LIVE_API_URL && !LIVE_API_URL.startsWith('PASTE_')}
+async function apiGet(action){
+  const r=await fetch(LIVE_API_URL+(LIVE_API_URL.includes('?')?'&':'?')+'action='+action+'&t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(20000)});
+  const d=await r.json();
+  if(!d||!d.ok)throw new Error((d&&d.error)||'bad response');
+  return d;
+}
+function applyValues(d){
+  if(!Array.isArray(d.values)||d.values.length<10)throw new Error('sheet returned too few rows');
+  const data=crunch(d.values);
+  boot(data);
+  DATA_SOURCE='api';DATA_HASH=d.dataHash||'';LAST_SYNC_AT=Date.now();SYNC_OK=true;
+  setBanner('live',data.SR.length);
+}
+const BUSY_PAGES=['search','report'];   // pages where a rebuild would wipe what the user typed
+async function pollLive(force){
+  if(!apiConfigured()||POLL_BUSY||(document.hidden&&!force))return;
+  POLL_BUSY=true;
+  try{
+    const v=await apiGet('version');
+    if(v.dataHash!==DATA_HASH){
+      const d=await apiGet('full');
+      if(BUSY_PAGES.includes(curPage)&&!force){PENDING=d}
+      else{PENDING=null;applyValues(d)}
+    }
+    SYNC_OK=true;LAST_SYNC_AT=Date.now();
+  }catch(e){console.warn('sync failed',e);SYNC_OK=false}
+  finally{POLL_BUSY=false;updateSyncPill()}
+}
+function applyPending(){if(PENDING){const d=PENDING;PENDING=null;try{applyValues(d)}catch(e){console.warn(e)}updateSyncPill()}}
+function updateSyncPill(){
+  const el=document.getElementById('syncPill');if(!el)return;
+  if(!apiConfigured()){el.style.display='none';return}
+  el.style.display='inline-flex';
+  const secs=LAST_SYNC_AT?Math.max(0,Math.round((Date.now()-LAST_SYNC_AT)/1000)):null;
+  const ago=secs===null?'':secs<60?`${secs}s ago`:`${Math.round(secs/60)} min ago`;
+  let state,text;
+  if(!SYNC_OK){state='bad';text='Sync lost · Retry'}
+  else if(PENDING){state='warn';text='New data · Click to update'}
+  else if(DATA_SOURCE!=='api'){state='warn';text='Snapshot data · Retry'}
+  else{state='ok';text='Live sync · '+ago}
+  el.dataset.state=state;el.querySelector('span:last-child').textContent=text;
+}
+setInterval(()=>pollLive(),POLL_MS);
+setInterval(updateSyncPill,5000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollLive(true)});
+window.addEventListener('online',()=>pollLive(true));
+function syncPillClick(){if(PENDING)applyPending();else pollLive(true)}
+
 async function tryLive(){
   showLoader('Fetching live data…');
+  if(apiConfigured()){
+    try{
+      setProgress(30,'Connecting to Google Sheets');
+      const d=await apiGet('full');
+      setProgress(80,'Rendering…');
+      applyValues(d);setProgress(100);hideLoader();updateSyncPill();return;
+    }catch(e){console.warn('Apps Script failed, trying proxies:',e.message);SYNC_OK=false}
+  }
   setProgress(10,'Connecting to Google Sheets');
   for(const proxy of PROXIES){
     try{
@@ -373,6 +485,7 @@ async function tryLive(){
       const data=crunch(parsed);
       setProgress(95,'Rendering…');
       boot(data);
+      DATA_SOURCE='proxy';
       setBanner('live',data.SR.length);
       setProgress(100);
       hideLoader();
@@ -382,7 +495,9 @@ async function tryLive(){
   // All proxies failed — use embedded
   setProgress(90,'Using snapshot data…');
   boot(_EMBEDDED);
+  DATA_SOURCE='snapshot';
   setBanner('snapshot',_EMBEDDED.SR.length);
+  updateSyncPill();
   setProgress(100);
   hideLoader();
 }
@@ -470,6 +585,7 @@ function buildPages(){
 }
 function switchPage(id){
   curPage=id;
+  if(PENDING&&!BUSY_PAGES.includes(id)){setTimeout(applyPending,0);}
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+id));
 }
