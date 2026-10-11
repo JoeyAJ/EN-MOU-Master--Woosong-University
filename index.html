@@ -406,18 +406,25 @@ function setBanner(mode,rowCount,savedAt,stale){
     const cts=new Date(savedAt||Date.now()).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
     p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; ${rowCount} records · last synced ${cts}${stale?'':' · updating…'}</span> <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank" style="color:var(--active);font-size:12px;margin-left:4px" title="Open source sheet">↗ Sheet</a>`;
   }else{
-    p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; Snapshot Sep 2026</span> <button onclick="tryLive()" style="margin-left:8px;font-size:11px;padding:2px 8px;border:1.5px solid var(--border);background:none;border-radius:4px;cursor:pointer;font-family:inherit">↺ Retry live</button>`;
+    p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; Snapshot Sep 2026</span>${LAST_ERR?`<div style="font-size:11px;color:#999;margin-top:4px">Live load failed: ${LAST_ERR.replace(/[<>&]/g,'')}</div>`:''} <button onclick="tryLive()" style="margin-left:8px;font-size:11px;padding:2px 8px;border:1.5px solid var(--border);background:none;border-radius:4px;cursor:pointer;font-family:inherit">↺ Retry live</button>`;
   }
 }
 
 /* ── LOAD FLOW ── */
 /* ── AUTO-SYNC (Apps Script) ── */
+let LAST_ERR='';
 let DATA_SOURCE='', DATA_HASH='', LAST_SYNC_AT=0, SYNC_OK=true, POLL_BUSY=false, PENDING=null;
 function apiConfigured(){return LIVE_API_URL && !LIVE_API_URL.startsWith('PASTE_')}
 async function apiGet(action){
   const ms=action==='full'?150000:30000;   // full can take 60-90 s on an Apps Script cold start
-  const r=await fetch(LIVE_API_URL+(LIVE_API_URL.includes('?')?'&':'?')+'action='+action+'&t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(ms)});
-  const d=await r.json();
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);
+  const t0=Date.now();let r,txt;
+  try{
+    r=await fetch(LIVE_API_URL+(LIVE_API_URL.includes('?')?'&':'?')+'action='+action+'&t='+Date.now(),{cache:'no-store',credentials:'omit',signal:ctrl.signal});
+    txt=await r.text();
+  }catch(e){throw new Error(action+': '+(e.name==='AbortError'?'timeout':e.name+' '+e.message)+' after '+Math.round((Date.now()-t0)/1000)+'s')}
+  finally{clearTimeout(timer)}
+  let d;try{d=JSON.parse(txt)}catch(e){throw new Error(action+': HTTP '+r.status+', not JSON after '+Math.round((Date.now()-t0)/1000)+'s')}
   if(!d||!d.ok)throw new Error((d&&d.error)||'bad response');
   return d;
 }
@@ -497,7 +504,7 @@ async function tryLive(){
       const d=await apiGet('full');
       setProgress(80,'Rendering…');
       applyValues(d);setProgress(100);hideLoader();updateSyncPill();return;
-    }catch(e){console.warn('Apps Script failed:',e.message);SYNC_OK=false}
+    }catch(e){console.warn('Apps Script failed:',e.message);SYNC_OK=false;LAST_ERR=e.message}
   }
   if(cached){setBanner('cache',(_SR||[]).length,cached.savedAt,true);updateSyncPill();return}   // keep showing the last good live data
   // No live data and nothing cached — fall back to the embedded snapshot
