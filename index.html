@@ -415,8 +415,21 @@ function setBanner(mode,rowCount,savedAt,stale){
 let LAST_ERR='';
 let DATA_SOURCE='', DATA_HASH='', LAST_SYNC_AT=0, SYNC_OK=true, POLL_BUSY=false, PENDING=null;
 function apiConfigured(){return LIVE_API_URL && !LIVE_API_URL.startsWith('PASTE_')}
+async function gunzipB64(b64){
+  const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  const txt=await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  return JSON.parse(txt);
+}
+// Prefer the compressed response (~43 KB); fall back to the plain one on old browsers or if it fails.
+async function apiGetFull(){
+  if(typeof DecompressionStream!=='undefined'){
+    try{const d=await apiGet('fullz');if(d.gz){d.values=await gunzipB64(d.gz);delete d.gz;return d}if(Array.isArray(d.values))return d}
+    catch(e){console.warn('fullz failed, trying full:',e.message);LAST_ERR=e.message}
+  }
+  return apiGet('full');
+}
 async function apiGet(action){
-  const ms=action==='full'?150000:30000;   // full can take 60-90 s on an Apps Script cold start
+  const ms=action.startsWith('full')?150000:30000;   // full can take 60-90 s on an Apps Script cold start
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ms);
   const t0=Date.now();let r,txt;
   try{
@@ -453,7 +466,7 @@ async function pollLive(force){
     const v=await apiGet('version');
     if(v.dataHash===DATA_HASH&&DATA_SOURCE==='cache'){DATA_SOURCE='api';setBanner('live',(_SR||[]).length)}
     if(v.dataHash!==DATA_HASH){
-      const d=await apiGet('full');
+      const d=await apiGetFull();
       if(BUSY_PAGES.includes(curPage)&&!force){PENDING=d}
       else{PENDING=null;applyValues(d)}
     }
@@ -501,7 +514,7 @@ async function tryLive(){
           setBanner('live',(_SR||[]).length);updateSyncPill();return;
         }
       }
-      const d=await apiGet('full');
+      const d=await apiGetFull();
       setProgress(80,'Rendering…');
       applyValues(d);setProgress(100);hideLoader();updateSyncPill();return;
     }catch(e){console.warn('Apps Script failed:',e.message);SYNC_OK=false;LAST_ERR=e.message}
