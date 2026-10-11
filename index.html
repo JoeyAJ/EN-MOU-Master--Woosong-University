@@ -396,12 +396,15 @@ function hideLoader(){
 }
 
 /* ── BANNER ── */
-function setBanner(mode,rowCount){
+function setBanner(mode,rowCount,savedAt,stale){
   const p=document.getElementById('hdr-sub');
   const ts=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
   if(!p)return;
   if(mode==='live'){
     p.innerHTML=`Active MOU database &mdash; <span style="color:var(--active);font-weight:600">&#9679; Live · ${rowCount} records · refreshed ${ts}</span> <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank" style="color:var(--active);font-size:12px;margin-left:4px" title="Open source sheet">↗ Sheet</a>`;
+  }else if(mode==='cache'){
+    const cts=new Date(savedAt||Date.now()).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; ${rowCount} records · last synced ${cts}${stale?'':' · updating…'}</span> <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank" style="color:var(--active);font-size:12px;margin-left:4px" title="Open source sheet">↗ Sheet</a>`;
   }else{
     p.innerHTML=`Active MOU database &mdash; <span style="color:#c85a0a;font-weight:600">&#9679; Snapshot Sep 2026</span> <button onclick="tryLive()" style="margin-left:8px;font-size:11px;padding:2px 8px;border:1.5px solid var(--border);background:none;border-radius:4px;cursor:pointer;font-family:inherit">↺ Retry live</button>`;
   }
@@ -412,17 +415,28 @@ function setBanner(mode,rowCount){
 let DATA_SOURCE='', DATA_HASH='', LAST_SYNC_AT=0, SYNC_OK=true, POLL_BUSY=false, PENDING=null;
 function apiConfigured(){return LIVE_API_URL && !LIVE_API_URL.startsWith('PASTE_')}
 async function apiGet(action){
-  const r=await fetch(LIVE_API_URL+(LIVE_API_URL.includes('?')?'&':'?')+'action='+action+'&t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(20000)});
+  const ms=action==='full'?150000:30000;   // full can take 60-90 s on an Apps Script cold start
+  const r=await fetch(LIVE_API_URL+(LIVE_API_URL.includes('?')?'&':'?')+'action='+action+'&t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(ms)});
   const d=await r.json();
   if(!d||!d.ok)throw new Error((d&&d.error)||'bad response');
   return d;
 }
+const CACHE_KEY='enMouLiveCache_v1';
+function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify({values:d.values,dataHash:d.dataHash||'',savedAt:Date.now()}))}catch(e){}}
+function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');return c&&Array.isArray(c.values)&&c.values.length>=10?c:null}catch(e){return null}}
 function applyValues(d){
   if(!Array.isArray(d.values)||d.values.length<10)throw new Error('sheet returned too few rows');
   const data=crunch(d.values);
   boot(data);
   DATA_SOURCE='api';DATA_HASH=d.dataHash||'';LAST_SYNC_AT=Date.now();SYNC_OK=true;
   setBanner('live',data.SR.length);
+  saveCache(d);
+}
+function applyCache(c){
+  const data=crunch(c.values);
+  boot(data);
+  DATA_SOURCE='cache';DATA_HASH=c.dataHash||'';
+  setBanner('cache',data.SR.length,c.savedAt);
 }
 const BUSY_PAGES=['search','report'];   // pages where a rebuild would wipe what the user typed
 async function pollLive(force){
@@ -430,6 +444,7 @@ async function pollLive(force){
   POLL_BUSY=true;
   try{
     const v=await apiGet('version');
+    if(v.dataHash===DATA_HASH&&DATA_SOURCE==='cache'){DATA_SOURCE='api';setBanner('live',(_SR||[]).length)}
     if(v.dataHash!==DATA_HASH){
       const d=await apiGet('full');
       if(BUSY_PAGES.includes(curPage)&&!force){PENDING=d}
@@ -449,6 +464,7 @@ function updateSyncPill(){
   let state,text;
   if(!SYNC_OK){state='bad';text='Sync lost · Retry'}
   else if(PENDING){state='warn';text='New data · Click to update'}
+  else if(DATA_SOURCE==='cache'){state='warn';text='Showing last synced data · Updating…'}
   else if(DATA_SOURCE!=='api'){state='warn';text='Snapshot data · Retry'}
   else{state='ok';text='Live sync · '+ago}
   el.dataset.state=state;el.querySelector('span:last-child').textContent=text;
@@ -460,39 +476,31 @@ window.addEventListener('online',()=>pollLive(true));
 function syncPillClick(){if(PENDING)applyPending();else pollLive(true)}
 
 async function tryLive(){
-  showLoader('Fetching live data…');
+  const cached=loadCache();
+  if(cached){
+    try{applyCache(cached)}catch(e){console.warn(e)}
+  }else{
+    showLoader('Fetching live data… (first load can take up to a minute)');
+    setProgress(30,'Connecting to Google Sheets');
+  }
+  updateSyncPill();
   if(apiConfigured()){
     try{
-      setProgress(30,'Connecting to Google Sheets');
+      if(cached){
+        // data unchanged since last visit? then the cached copy is already live
+        const v=await apiGet('version');
+        if(v.dataHash&&v.dataHash===cached.dataHash){
+          DATA_SOURCE='api';LAST_SYNC_AT=Date.now();SYNC_OK=true;
+          setBanner('live',(_SR||[]).length);updateSyncPill();return;
+        }
+      }
       const d=await apiGet('full');
       setProgress(80,'Rendering…');
       applyValues(d);setProgress(100);hideLoader();updateSyncPill();return;
-    }catch(e){console.warn('Apps Script failed, trying proxies:',e.message);SYNC_OK=false}
+    }catch(e){console.warn('Apps Script failed:',e.message);SYNC_OK=false}
   }
-  setProgress(10,'Connecting to Google Sheets');
-  for(const proxy of PROXIES){
-    try{
-      setProgress(25,`Trying ${proxy.includes('corsproxy')?'corsproxy.io':'allorigins'}…`);
-      const url=proxy+encodeURIComponent(SHEET_URL);
-      const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
-      if(!r.ok)continue;
-      const txt=await r.text();
-      if(!txt||txt.length<200)continue;
-      setProgress(55,'Parsing CSV…');
-      const parsed=csvParse(txt);
-      if(parsed.length<10)continue;
-      setProgress(75,'Crunching data…');
-      const data=crunch(parsed);
-      setProgress(95,'Rendering…');
-      boot(data);
-      DATA_SOURCE='proxy';
-      setBanner('live',data.SR.length);
-      setProgress(100);
-      hideLoader();
-      return;
-    }catch(e){console.warn('Proxy failed:',e.message);}
-  }
-  // All proxies failed — use embedded
+  if(cached){setBanner('cache',(_SR||[]).length,cached.savedAt,true);updateSyncPill();return}   // keep showing the last good live data
+  // No live data and nothing cached — fall back to the embedded snapshot
   setProgress(90,'Using snapshot data…');
   boot(_EMBEDDED);
   DATA_SOURCE='snapshot';
