@@ -183,7 +183,14 @@ table.rt tr:hover td{background:var(--surface2)}
 .cn-link .cn-t1{font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700;color:#c8102e}
 .cn-link .cn-t2{font-size:11px;color:var(--muted)}
 .cn-link .cn-arrow{font-size:16px;color:#c8102e;margin-left:4px}
-@media(max-width:600px){.hdr{padding:1.5rem 1.25rem 1.25rem}.cn-link{width:100%}}
+.man-link{display:flex;align-items:center;gap:12px;padding:12px 18px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface2);color:var(--text);text-decoration:none;transition:border-color .15s}
+.man-link:hover{border-color:var(--main)}
+.man-link:focus-visible{outline:2px solid var(--main);outline-offset:2px}
+.man-link .man-ico{font-size:1.4rem;line-height:1}
+.man-link .man-txt{display:flex;flex-direction:column;gap:2px}
+.man-link .man-t1{font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700}
+.man-link .man-t2{font-size:11px;color:var(--muted)}
+@media(max-width:600px){.hdr{padding:1.5rem 1.25rem 1.25rem}.cn-link,.man-link{width:100%}}
 #syncPill{display:inline-flex;align-self:flex-start;justify-self:start;width:max-content!important;max-width:100%;align-items:center;gap:7px;margin:0 0 6px;height:30px;padding:0 12px;border:1px solid var(--border);border-radius:999px;background:transparent;font-family:inherit;font-weight:600;font-size:12px;line-height:1;color:#7a7368;cursor:pointer}
 #syncPill .sp-dot{width:7px;height:7px;border-radius:50%;background:#c9c3b8}
 #syncPill[data-state=ok] .sp-dot{background:#0f9b6e;animation:spPulse 2.4s ease-in-out infinite}
@@ -213,6 +220,11 @@ table.rt tr:hover td{background:var(--surface2)}
       <span class="cn-flag" aria-hidden="true">🇨🇳</span>
       <span class="cn-txt"><span class="cn-t1">China Team MOU Dashboard</span><span class="cn-t2">중국팀 MOU 대시보드</span></span>
       <span class="cn-arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="man-link" href="manual.html" target="_blank" rel="noopener" title="Open the dashboard user manual in a new tab">
+      <span class="man-ico" aria-hidden="true">📘</span>
+      <span class="man-txt"><span class="man-t1">User manual</span><span class="man-t2">사용 설명서 · 使用手冊</span></span>
+      <span class="cn-arrow" aria-hidden="true" style="color:var(--muted)">↗</span>
     </a>
   </div>
 </div>

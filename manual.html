@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>English Team MOU Dashboard — Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5F4; --surface:#FFFFFF; --surface2:#E7EDEB; --ink:#16242C; --muted:#56676F; --line:#C8D3D0;
+  --green:#1C7A57; --green-soft:#DBEEE5; --amber:#A86F06; --amber-soft:#FAEDD2; --red:#B23A27; --red-soft:#F7DFD9;
+  --blue:#2B5884; --blue-soft:#DCE7F1; --focus:#2B5884;
+  --display:"Bricolage Grotesque","Noto Sans TC",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans","Noto Sans TC",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E191E; --surface:#15232A; --surface2:#1C2D35; --ink:#E4ECEE; --muted:#97A8AF; --line:#2B3E46;
+    --green:#4DBF8D; --green-soft:#17382C; --amber:#E7AE48; --amber-soft:#382C13; --red:#EF7A63; --red-soft:#3B1E19;
+    --blue:#82AEDA; --blue-soft:#192C3E; --focus:#82AEDA; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E191E; --surface:#15232A; --surface2:#1C2D35; --ink:#E4ECEE; --muted:#97A8AF; --line:#2B3E46;
+  --green:#4DBF8D; --green-soft:#17382C; --amber:#E7AE48; --amber-soft:#382C13; --red:#EF7A63; --red-soft:#3B1E19;
+  --blue:#82AEDA; --blue-soft:#192C3E; --focus:#82AEDA; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+html[data-lang="en"] .zh{display:none!important}
+html[data-lang="zh"] .en{display:none!important}
+html[data-lang="zh"] body{line-height:1.75}
+a{color:var(--blue)}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface2);padding:.08em .35em;border-radius:4px;word-break:break-all}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
+img,svg{max-width:100%}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.brand{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.brand-mark{width:22px;height:22px;border-radius:6px;background:var(--green);position:relative;flex:none}
+.brand-mark::after{content:"";position:absolute;left:5px;top:5px;width:12px;height:12px;border:2px solid var(--surface);border-radius:3px;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(45deg)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--bg)}
+.lang button{white-space:nowrap;border:0;background:none;padding:4px 12px;border-radius:999px;cursor:pointer;font-size:14px;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+html[data-theme="dark"] .btn.primary{color:#0E191E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0E191E}}
+.btn:hover{filter:brightness(1.05)}
+.top .btn{padding:6px 12px}
+@media (max-width:640px){.top .btn .label{display:none}.top-in{gap:10px;padding:10px 16px}.brand{min-width:0;font-size:15.5px}.brand>span:not(.brand-mark){overflow:hidden;text-overflow:ellipsis}.lang button{padding:4px 9px}}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);align-self:start;padding:28px 0}
+.rail ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.rail a{display:block;padding:7px 0 7px 16px;margin-left:-2px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:14.5px}
+.rail a:hover{color:var(--ink)}
+.rail a.on{color:var(--ink);border-left-color:var(--green);font-weight:600}
+main{min-width:0;padding-bottom:80px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  .rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 53px);z-index:8;background:var(--bg);padding:8px 0;margin:0 -20px;border-bottom:1px solid var(--line)}
+  .rail ol{display:flex;gap:4px;border:0;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+  .rail ol::-webkit-scrollbar{display:none}
+  .rail a{border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin:0;white-space:nowrap;font-size:13.5px;background:var(--surface)}
+  .rail a.on{border-color:var(--green);background:var(--green-soft)}
+}
+
+/* hero */
+.hero{padding:44px 0 8px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,5.4vw,56px);line-height:1.02;letter-spacing:-.025em;margin:0;max-width:16ch}
+html[data-lang="zh"] .hero h1{letter-spacing:0;line-height:1.15}
+.hero .sub{font-family:var(--display);font-weight:500;font-size:clamp(18px,2.4vw,24px);color:var(--muted);margin:10px 0 0}
+.meta{margin-top:14px;font-size:14px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.lead{font-size:18px;max-width:60ch;margin:22px 0 0}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+
+/* sections */
+section.s{padding-top:56px}
+section.s>h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,34px);letter-spacing:-.015em;line-height:1.15;margin:0 0 6px}
+html[data-lang="zh"] section.s>h2{letter-spacing:0}
+.intro{color:var(--muted);margin:0 0 20px;max-width:64ch}
+h3{font-family:var(--display);font-weight:700;font-size:20px;margin:28px 0 10px;letter-spacing:-.005em}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+
+/* flow map */
+.flow{padding:22px}
+.src{display:block;width:100%;text-align:left;border:2px solid var(--green);background:var(--green-soft);border-radius:12px;padding:14px 16px;cursor:pointer}
+.node-name{font-family:var(--display);font-weight:700;font-size:18px;display:block}
+.node-tag{font-size:14px;color:var(--muted);display:block}
+.src .node-tag{color:var(--ink)}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:0}
+.lane{position:relative;padding-top:30px}
+.lane::before{content:"";position:absolute;left:24px;top:0;bottom:24px;width:2px;background:var(--line)}
+.lane .pulse{position:absolute;left:20px;top:0;width:10px;height:10px;border-radius:50%;background:var(--green);animation:travel 2.8s linear infinite}
+.lane.slow .pulse{background:var(--blue);animation-duration:5.6s}
+@keyframes travel{0%{top:0;opacity:0}8%{opacity:1}88%{opacity:1}100%{top:calc(100% - 34px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.lane .pulse{animation:none;top:40%}}
+.lane-label{position:relative;margin:0 0 12px 44px;font-size:13.5px;font-weight:600;color:var(--green)}
+.lane.slow .lane-label{color:var(--blue)}
+.node{position:relative;display:block;width:calc(100% - 44px);margin:0 0 14px 44px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.node::before{content:"";position:absolute;left:-26px;top:22px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.node[aria-pressed="true"],.src[aria-pressed="true"]{box-shadow:0 0 0 3px var(--blue-soft);border-color:var(--blue)}
+.src[aria-pressed="true"]{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.node:hover{border-color:var(--muted)}
+.detail{margin-top:6px;border-top:1px dashed var(--line);padding-top:16px;min-height:72px}
+.detail h4{margin:0 0 4px;font-family:var(--display);font-size:17px}
+.detail p{margin:0;max-width:66ch}
+@media (max-width:640px){.lanes{grid-template-columns:1fr;gap:0}.flow{padding:16px}}
+
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.role{padding:16px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.role b{display:block;font-family:var(--display);font-size:16px;margin-bottom:4px}
+.role.retired{background:none;border-style:dashed}
+.role.retired b{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
+@media (max-width:760px){.roles{grid-template-columns:1fr}}
+
+/* tasks */
+.tasks{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.task{padding:14px 16px;border-left:4px solid var(--green);background:var(--surface);border-radius:0 12px 12px 0}
+.task.t-end{border-left-color:var(--amber)}
+.task.t-del{border-left-color:var(--red)}
+.task.t-fix{border-left-color:var(--blue)}
+.task b{display:block;font-size:15.5px}
+.task span{font-size:15px}
+@media (max-width:640px){.tasks{grid-template-columns:1fr}}
+
+/* simulator */
+.sim{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;margin-top:14px}
+.sheet{overflow:hidden}
+.sheet-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface2);border-radius:14px 14px 0 0}
+.sheet-tab{font-size:13px;font-weight:600;background:var(--surface);border:1px solid var(--line);border-bottom-color:var(--surface);padding:3px 10px;border-radius:6px 6px 0 0;margin-bottom:-11px}
+.sheet-scroll{overflow-x:auto}
+table.grid{border-collapse:collapse;width:100%;font-size:14.5px;min-width:360px}
+table.grid th{font-weight:500;font-size:12.5px;color:var(--muted);text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--surface2)}
+table.grid td{padding:7px 10px;border-bottom:1px solid var(--line)}
+table.grid tr.new td{background:var(--green-soft)}
+.st{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 10px;font-size:13px;cursor:pointer;min-width:84px;text-align:center}
+.st.active{border-color:var(--green);color:var(--green);font-weight:600}
+.st.inactive{color:var(--muted)}
+.sheet-foot{display:flex;gap:8px;padding:10px 14px;flex-wrap:wrap}
+.dash{padding:18px;display:flex;flex-direction:column;gap:12px}
+.dash-title{font-family:var(--display);font-weight:700;font-size:15px;color:var(--muted)}
+.count{font-family:var(--display);font-weight:800;font-size:64px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.count small{display:block;font-family:var(--body);font-size:14px;font-weight:500;letter-spacing:0;color:var(--muted);margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 12px;font-size:13.5px;font-weight:600;border:1px solid transparent;width:max-content;max-width:100%}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.pill.ok{color:var(--green);background:var(--green-soft)}
+.pill.warn{color:var(--amber);background:var(--amber-soft)}
+.pill.bad{color:var(--red);background:var(--red-soft)}
+.pill.warn.busy::before{animation:blink .8s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.pill.warn.busy::before{animation:none}}
+.sim-note{font-size:13.5px;color:var(--muted);margin:0}
+@media (max-width:760px){.sim{grid-template-columns:1fr}}
+
+/* column map */
+.cols{display:grid;grid-template-columns:repeat(19,minmax(0,1fr));gap:4px;margin:6px 0 10px}
+.col{aspect-ratio:1/1.25;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.col.used{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.col.status{background:var(--green);border-color:var(--green);color:#fff}
+.col.free{border-style:dashed;color:var(--muted);background:none}
+.col[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px}
+@media (max-width:640px){.cols{grid-template-columns:repeat(10,minmax(0,1fr))}.col{aspect-ratio:1/1}}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13.5px;color:var(--muted);margin-bottom:12px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:6px}
+.legend .l-used{background:var(--blue-soft);border-color:var(--blue)}
+.legend .l-status{background:var(--green);border-color:var(--green)}
+.legend .l-read{background:var(--surface)}
+.legend .l-free{border-style:dashed}
+.colinfo{padding:12px 16px;border-radius:10px;background:var(--surface2);min-height:52px}
+.colinfo b{font-family:var(--mono)}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.rules .panel{padding:16px 18px}
+.rules h4{margin:0 0 8px;font-family:var(--display);font-size:17px;display:flex;align-items:center;gap:8px}
+.rules ul{margin:0;padding:0;list-style:none}
+.rules li{padding:6px 0 6px 26px;position:relative;border-top:1px solid var(--line);font-size:15px}
+.rules li:first-child{border-top:0}
+.keep li::before{content:"";position:absolute;left:4px;top:13px;width:10px;height:6px;border-left:2px solid var(--green);border-bottom:2px solid var(--green);transform:rotate(-45deg)}
+.avoid li::before,.avoid li::after{content:"";position:absolute;left:4px;top:16px;width:12px;height:2px;background:var(--red);transform:rotate(45deg)}
+.avoid li::after{transform:rotate(-45deg)}
+.fine{margin:14px 0 0;color:var(--muted);font-size:15px}
+@media (max-width:760px){.rules{grid-template-columns:1fr}}
+
+/* status */
+.statuses{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.statuses .pill{cursor:pointer;border:1px solid transparent}
+.statuses .pill[aria-pressed="true"]{border-color:currentColor}
+.sdetail{padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sdetail h4{margin:0 0 4px;font-size:13.5px;color:var(--muted);font-weight:600}
+.sdetail p{margin:0}
+@media (max-width:640px){.sdetail{grid-template-columns:1fr}}
+
+/* backup */
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.layer{padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);position:relative}
+.layer .num{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;color:var(--line)}
+.layer h4{font-family:var(--display);font-size:19px;margin:6px 0 6px}
+.layer p{margin:0 0 6px;font-size:15px}
+.layer .who{font-size:14px;color:var(--muted)}
+.layer.l1{border-top:4px solid var(--green)}
+.layer.l2{border-top:4px solid var(--blue)}
+@media (max-width:640px){.layers{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14.5px;cursor:pointer;text-align:left}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.answer{padding:18px 20px;border-left:5px solid var(--green)}
+.answer.two{border-left-color:var(--blue)}
+.answer .which{font-family:var(--display);font-weight:700;font-size:19px;margin:0 0 8px}
+.answer ol{margin:0;padding-left:22px}
+.answer li{margin:4px 0}
+.answer .note{margin:12px 0 0;font-size:14.5px;color:var(--muted)}
+.empty{color:var(--muted);margin:0}
+
+/* troubleshooting */
+.test{padding:18px 20px;margin-bottom:16px}
+.test ol{margin:8px 0 0;padding-left:22px}
+details.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+details.q summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:flex-start}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"+";font-family:var(--mono);color:var(--muted);width:14px;flex:none}
+details.q[open] summary::before{content:"−"}
+details.q .a{padding:0 16px 14px 40px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:15px}
+details.q .a dt{color:var(--muted);font-size:13.5px;padding-top:2px}
+details.q .a dd{margin:0}
+.contact{margin-top:14px;color:var(--muted)}
+
+/* maintainer */
+.owner{padding:16px 18px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start}
+.owner .avatar{width:42px;height:42px;border-radius:50%;background:var(--ink);color:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;flex:none}
+.owner p{margin:0}
+.comp{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.comp .panel{padding:14px 16px}
+.comp h4{margin:0 0 4px;font-family:var(--display);font-size:16.5px}
+.comp .where{font-size:14px;color:var(--muted);margin:0 0 6px}
+.comp .set{font-size:14px;margin:0}
+.comp .retired{border-style:dashed;background:none}
+@media (max-width:640px){.comp{grid-template-columns:1fr}}
+details.task-d{border-top:1px solid var(--line)}
+details.task-d:last-of-type{border-bottom:1px solid var(--line)}
+details.task-d summary{cursor:pointer;padding:12px 0;font-weight:600}
+details.task-d p{margin:0 0 12px;font-size:15px}
+.needs{margin:0;padding-left:20px}
+.progress{display:flex;align-items:center;gap:12px;margin:14px 0}
+.bar{flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+.progress output{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.steps{list-style:none;margin:0;padding:0;counter-reset:st}
+.steps li{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.steps input{width:20px;height:20px;margin-top:3px;accent-color:var(--green);flex:none;cursor:pointer}
+.steps label{cursor:pointer}
+.steps .n{font-family:var(--display);font-weight:700;color:var(--muted);width:20px;flex:none;padding-top:1px}
+.steps li.done label{color:var(--muted)}
+.steps li.done b{text-decoration:line-through}
+.warnline{margin:14px 0 0;padding:12px 16px;border-radius:10px;background:var(--amber-soft);font-size:15px}
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="en">MOU Dashboard manual</span><span class="zh">MOU Dashboard 手冊</span></div>
+    <div class="top-actions">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-set-lang="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="btn primary" href="https://joeyaj.github.io/EN-MOU-Master--Woosong-University/" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2" width="13" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 10.5V8M8 10.5V5.5M11.5 10.5V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="label"><span class="en">Dashboard</span><span class="zh">Dashboard</span></span></a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Sections">
+    <ol>
+      <li><a href="#overview"><span class="en">How it works</span><span class="zh">系統如何運作</span></a></li>
+      <li><a href="#update"><span class="en">Updating MOUs</span><span class="zh">日常更新</span></a></li>
+      <li><a href="#rules"><span class="en">Rules</span><span class="zh">保持連動的規則</span></a></li>
+      <li><a href="#status"><span class="en">Reading the status</span><span class="zh">看懂狀態</span></a></li>
+      <li><a href="#backup"><span class="en">Backup and restore</span><span class="zh">備份與還原</span></a></li>
+      <li><a href="#trouble"><span class="en">Troubleshooting</span><span class="zh">疑難排解</span></a></li>
+      <li><a href="#maintain"><span class="en">For the maintainer</span><span class="zh">維護者參考</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1><span class="en">English Team MOU Dashboard</span><span class="zh">英文組 MOU Dashboard</span></h1>
+      <p class="sub"><span class="en">User and maintenance manual</span><span class="zh">使用與維護手冊</span></p>
+      <div class="meta"><span><span class="en">October 19, 2026</span><span class="zh">2026 年 10 月 19 日</span></span><span>@NexAeon.Joey</span></div>
+      <p class="lead"><span class="en">Edit one tab in the office list. The dashboard follows within about 20 seconds, and a backup copy is saved every night.</span><span class="zh">只要在辦公室總表更新一個分頁，Dashboard 約 20 秒內自動跟上，每天晚上也會自動存一份備份。</span></p>
+      <div class="hero-actions">
+        <a class="btn primary" href="https://joeyaj.github.io/EN-MOU-Master--Woosong-University/" target="_blank" rel="noopener"><span class="en">Open the dashboard</span><span class="zh">打開 Dashboard</span></a>
+        <a class="btn" href="https://docs.google.com/spreadsheets/d/1bQjCmDQguZesDrqG3Rl3ZwImnNCgM4cKN4efv1rSle0/edit?usp=sharing" target="_blank" rel="noopener"><span class="en">Open the office list</span><span class="zh">打開辦公室總表</span></a>
+      </div>
+    </div>
+
+    <!-- 1 overview -->
+    <section class="s" id="overview">
+      <h2><span class="en">How it works</span><span class="zh">系統如何運作</span></h2>
+      <p class="intro"><span class="en">Everything starts from one tab. Select any part to see what it does.</span><span class="zh">所有資料都從同一個分頁出發。點選任一部分查看說明。</span></p>
+      <div class="panel flow">
+        <button type="button" class="src" data-node="source" aria-pressed="true">
+          <span class="node-name"><span class="en">Office list · All MOUs</span><span class="zh">辦公室總表 · All MOUs</span></span>
+          <span class="node-tag"><span class="en">IR MOU List Updated 2026-09 — the only place to edit</span><span class="zh">IR MOU List Updated 2026-09，唯一要更新的地方</span></span>
+        </button>
+        <div class="lanes">
+          <div class="lane">
+            <span class="pulse" aria-hidden="true"></span>
+            <p class="lane-label"><span class="en">Live · about every 15 s</span><span class="zh">即時 · 約每 15 秒</span></p>
+            <button type="button" class="node" data-node="live" aria-pressed="false"><span class="node-name">EN MOU Live</span><span class="node-tag"><span class="en">Apps Script · Joey’s account</span><span class="zh">Apps Script · Joey 帳號</span></span></button>
+            <button type="button" class="node" data-node="dash" aria-pressed="false"><span class="node-name">EN MOU Dashboard</span><span class="node-tag"><span class="en">GitHub Pages website</span><span class="zh">GitHub Pages 網頁</span></span></button>
+          </div>
+          <div class="lane slow">
+            <span class="pulse" aria-hidden="true"></span>
+            <p class="lane-label"><span class="en">Backup · nightly around 23:00</span><span class="zh">備份 · 每晚約 23:00</span></p>
+            <button type="button" class="node" data-node="backup" aria-pressed="false"><span class="node-name">MOU Backup</span><span class="node-tag"><span class="en">Apps Script · Joey’s account</span><span class="zh">Apps Script · Joey 帳號</span></span></button>
+            <button type="button" class="node" data-node="folder" aria-pressed="false"><span class="node-name"><span class="en">Drive “MOU Backups”</span><span class="zh">Drive「MOU Backups」</span></span><span class="node-tag"><span class="en">Daily snapshots, newest 30 kept</span><span class="zh">每日快照，保留最新 30 份</span></span></button>
+          </div>
+        </div>
+        <div class="detail" id="nodeDetail" aria-live="polite"></div>
+      </div>
+
+      <div class="roles">
+        <div class="role"><b><span class="en">English team</span><span class="zh">英文組</span></b><span class="en">Add and edit data only in All MOUs of the office list. No upload, export or notice needed.</span><span class="zh">只在辦公室總表的 All MOUs 新增、修改資料，不需要上傳、匯出或通知任何人。</span></div>
+        <div class="role"><b>Joey</b><span class="en">Maintains EN MOU Live, the website and the backup, all on Joey’s accounts. Can package all code and data for a handover or your own copy at any time — just ask.</span><span class="zh">維護 EN MOU Live、網頁和備份，目前都在 Joey 的帳號下。需要由他人維護或另外複製一套時，可隨時把程式碼和資料打包交給你們。</span></div>
+        <div class="role retired"><b>Joey IR MOU List … For Dashboard</b><span class="en">Retired. Please don’t edit it; changes there no longer reach the dashboard.</span><span class="zh">已停止使用，請勿再修改，在那裡的修改不會反映到 Dashboard。</span></div>
+      </div>
+    </section>
+
+    <!-- 2 update -->
+    <section class="s" id="update">
+      <h2><span class="en">Updating MOUs</span><span class="zh">日常更新</span></h2>
+      <p class="intro"><span class="en">Open the office list and edit the All MOUs tab. Google Sheets saves automatically.</span><span class="zh">打開辦公室總表，直接修改 All MOUs 分頁，Google Sheets 會自動儲存。</span></p>
+      <div class="tasks">
+        <div class="task"><b><span class="en">Add a new MOU</span><span class="zh">新增 MOU</span></b><span class="en">Add a row below the last row, fill it in, and set column R to Active.</span><span class="zh">在最後一列下方新增一列，填好各欄，R 欄設為 Active。</span></div>
+        <div class="task t-fix"><b><span class="en">Correct details</span><span class="zh">修正資料</span></b><span class="en">Edit the cell directly: name, dates, country, MOU type.</span><span class="zh">直接修改儲存格：學校名稱、日期、國家、MOU 類型等。</span></div>
+        <div class="task t-end"><b><span class="en">An MOU expires or ends</span><span class="zh">MOU 到期或終止</span></b><span class="en">Change column R to Inactive. The row stays but leaves the dashboard count.</span><span class="zh">把 R 欄改為 Inactive。該列保留在表中，但不再計入 Dashboard。</span></div>
+        <div class="task t-del"><b><span class="en">Remove a wrong entry</span><span class="zh">刪除錯誤資料</span></b><span class="en">Delete the row. For real MOUs, prefer Inactive to keep the record.</span><span class="zh">直接刪除該列。真實的 MOU 建議改為 Inactive 以保留紀錄。</span></div>
+      </div>
+
+      <h3><span class="en">Try it</span><span class="zh">試試看</span></h3>
+      <p class="intro"><span class="en">Switch a status or add a row and watch the dashboard follow. In real use this takes about 20 seconds; here it’s sped up.</span><span class="zh">切換狀態或新增一列，看看 Dashboard 如何跟著更新。實際使用約需 20 秒，這裡加快了速度。</span></p>
+      <div class="sim">
+        <div class="panel sheet">
+          <div class="sheet-head"><span class="sheet-tab">All MOUs</span><span style="font-size:13px;color:var(--muted);margin-left:auto"><span class="en">example data</span><span class="zh">範例資料</span></span></div>
+          <div class="sheet-scroll">
+            <table class="grid">
+              <thead><tr><th>B · <span class="en">University</span><span class="zh">學校</span></th><th>G · <span class="en">Country</span><span class="zh">國家</span></th><th>R · <span class="en">Status</span><span class="zh">狀態</span></th></tr></thead>
+              <tbody id="simBody"></tbody>
+            </table>
+          </div>
+          <div class="sheet-foot">
+            <button type="button" class="btn" id="simAdd"><span class="en">Add MOU</span><span class="zh">新增 MOU</span></button>
+            <button type="button" class="btn" id="simReset"><span class="en">Reset</span><span class="zh">重設</span></button>
+          </div>
+        </div>
+        <div class="panel dash" aria-live="polite">
+          <div class="dash-title">EN MOU Dashboard</div>
+          <div class="count"><span id="simCount">0</span><small><span class="en">Active MOUs</span><span class="zh">Active MOU 筆數</span></small></div>
+          <span class="pill ok" id="simPill"></span>
+          <p class="sim-note"><span class="en">Only rows marked Active are counted.</span><span class="zh">只計算標記為 Active 的列。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 rules -->
+    <section class="s" id="rules">
+      <h2><span class="en">Rules that keep the link working</span><span class="zh">保持連動的規則</span></h2>
+      <p class="intro"><span class="en">The dashboard finds data by tab name and column position. It reads columns A to R. Select a column to see its role.</span><span class="zh">Dashboard 依分頁名稱和欄位位置讀取資料，讀取範圍是 A 到 R 欄。點選欄位查看說明。</span></p>
+      <div class="legend">
+        <span><i class="l-used"></i><span class="en">Shown on the dashboard</span><span class="zh">顯示在 Dashboard</span></span>
+        <span><i class="l-read"></i><span class="en">Read, not shown</span><span class="zh">讀取但不顯示</span></span>
+        <span><i class="l-status"></i><span class="en">Status (Active / Inactive)</span><span class="zh">狀態欄（Active / Inactive）</span></span>
+        <span><i class="l-free"></i><span class="en">Free for new columns</span><span class="zh">可新增欄位</span></span>
+      </div>
+      <div class="cols" id="cols" role="group" aria-label="Columns A to R"></div>
+      <div class="colinfo" id="colInfo" aria-live="polite"></div>
+
+      <div class="rules">
+        <div class="panel keep">
+          <h4><span class="en">Please keep</span><span class="zh">請保留</span></h4>
+          <ul>
+            <li><span class="en">The tab name exactly <b>All MOUs</b></span><span class="zh">分頁名稱必須是 <b>All MOUs</b></span></li>
+            <li><span class="en">The header in row 1, data from row 2</span><span class="zh">第 1 列為標題列，資料從第 2 列開始</span></li>
+            <li><span class="en">The order of columns A to R</span><span class="zh">A 到 R 欄的順序</span></li>
+            <li><span class="en">One MOU per row, no merged cells</span><span class="zh">每列一筆 MOU，不合併儲存格</span></li>
+            <li><span class="en">Joey’s view access to the office list</span><span class="zh">Joey 對辦公室總表的檢視權限</span></li>
+          </ul>
+        </div>
+        <div class="panel avoid">
+          <h4><span class="en">Please avoid</span><span class="zh">請避免</span></h4>
+          <ul>
+            <li><span class="en">Renaming the All MOUs tab — the dashboard shows a sync error</span><span class="zh">把 All MOUs 分頁改名，Dashboard 會顯示同步中斷</span></li>
+            <li><span class="en">Inserting, deleting or moving columns within A to R</span><span class="zh">在 A 到 R 欄之間插入、刪除或移動欄位</span></li>
+            <li><span class="en">Replacing the file with a new copy, or moving it to the trash</span><span class="zh">複製新檔案來取代它，或移到垃圾桶</span></li>
+            <li><span class="en">Editing the retired Joey sheet</span><span class="zh">修改已停用的 Joey 表</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="fine"><span class="en">Colors, fonts, sorting and filters are all fine. Renaming the file is fine too, since the dashboard follows the file’s ID. The “↗ Sheet” link on the dashboard opens this office list.</span><span class="zh">顏色、字型、排序、篩選都可以自由使用。檔案改名也沒關係，Dashboard 綁定的是檔案 ID。Dashboard 上的「↗ Sheet」連結會打開這份辦公室總表。</span></p>
+    </section>
+
+    <!-- 4 status -->
+    <section class="s" id="status">
+      <h2><span class="en">Reading the status</span><span class="zh">看懂狀態</span></h2>
+      <p class="intro"><span class="en">The status line under the dashboard title shows the number of Active MOUs, and the sync indicator shows where the data comes from. Select an indicator.</span><span class="zh">Dashboard 標題下方的狀態列會顯示 Active MOU 筆數，同步指示則說明資料目前的來源。點選指示查看說明。</span></p>
+      <div class="statuses" id="statuses"></div>
+      <div class="panel sdetail" id="sDetail" aria-live="polite"></div>
+      <p class="fine"><span class="en">Phones sync too. Returning to the page from another app or tab triggers an immediate check.</span><span class="zh">手機也會自動同步。從其他 App 或分頁切回來時，Dashboard 會立即檢查一次更新。</span></p>
+    </section>
+
+    <!-- 5 backup -->
+    <section class="s" id="backup">
+      <h2><span class="en">Backup and restore</span><span class="zh">備份與還原</span></h2>
+      <p class="intro"><span class="en">If data is changed or deleted by mistake, there are two ways to get it back.</span><span class="zh">萬一資料被改錯或刪掉，有兩種方式可以找回來。</span></p>
+      <div class="layers">
+        <div class="layer l1">
+          <div class="num" aria-hidden="true">1</div>
+          <h4><span class="en">Version history</span><span class="zh">第一層：版本記錄</span></h4>
+          <p><span class="en">Built into Google Sheets. Records every change: who, when, and what.</span><span class="zh">Google Sheets 內建功能，自動記住每一次修改：誰、什麼時候、改了什麼。</span></p>
+          <p class="who"><span class="en">Used by editors of the office list (the English team). For small mistakes.</span><span class="zh">辦公室總表的編輯者（英文組）可以使用。適合處理小錯誤。</span></p>
+        </div>
+        <div class="layer l2">
+          <div class="num" aria-hidden="true">2</div>
+          <h4><span class="en">Daily backup files</span><span class="zh">第二層：每日備份檔案</span></h4>
+          <p><span class="en">Separate full copies of All MOUs, saved every night in the “MOU Backups” folder of Joey’s Drive.</span><span class="zh">每天晚上把 All MOUs 完整另存一份，放在 Joey Drive 的「MOU Backups」資料夾。</span></p>
+          <p class="who"><span class="en">Joey shares the file you need. For major incidents.</span><span class="zh">由 Joey 分享需要的檔案。適合處理大事故。</span></p>
+        </div>
+      </div>
+      <h3><span class="en">What happened?</span><span class="zh">發生了什麼事？</span></h3>
+      <div class="chips" id="chips" role="group"></div>
+      <div class="panel answer" id="answer" aria-live="polite"><p class="empty"><span class="en">Choose what happened to see which layer to use and how.</span><span class="zh">選擇發生的情況，查看該用哪一層以及怎麼做。</span></p></div>
+      <p class="fine"><span class="en">Why two layers: version history lives inside the office list, so if the file is deleted it goes with it. The backup files are stored separately. Only the newest 30 are kept; days without changes are skipped, so 30 usually covers more than a month.</span><span class="zh">為什麼需要兩層：版本記錄存在辦公室總表裡，檔案被刪除時會一起消失；備份檔案則是獨立存放的。備份只保留最新 30 份，沒有變動的日子不產生副本，所以通常可以涵蓋一個月以上。</span></p>
+    </section>
+
+    <!-- 6 trouble -->
+    <section class="s" id="trouble">
+      <h2><span class="en">Troubleshooting</span><span class="zh">疑難排解</span></h2>
+      <div class="panel test">
+        <b><span class="en">One-minute test</span><span class="zh">一分鐘測試</span></b>
+        <ol>
+          <li><span class="en">Open the dashboard and note the Active MOU count.</span><span class="zh">打開 Dashboard，記下 Active MOU 筆數。</span></li>
+          <li><span class="en">In All MOUs, change column R of any Active row to Inactive.</span><span class="zh">在 All MOUs 中，把任一 Active 列的 R 欄改為 Inactive。</span></li>
+          <li><span class="en">Wait about 20 seconds. The count drops by 1.</span><span class="zh">等待約 20 秒，筆數會減少 1。</span></li>
+          <li><span class="en">Change it back to Active. The count returns.</span><span class="zh">改回 Active，筆數恢復。</span></li>
+        </ol>
+      </div>
+      <div id="faq"></div>
+      <p class="contact"><span class="en">Still stuck? Send Joey a screenshot of the dashboard’s status line and the error message.</span><span class="zh">仍無法解決時，請把 Dashboard 狀態列和錯誤訊息的截圖傳給 Joey。</span></p>
+    </section>
+
+    <!-- 7 maintainer -->
+    <section class="s" id="maintain">
+      <h2><span class="en">For the maintainer</span><span class="zh">維護者參考</span></h2>
+      <p class="intro"><span class="en">For whoever maintains the system. Not needed for daily use.</span><span class="zh">給維護系統的人看，英文組日常使用不需要閱讀。</span></p>
+      <div class="panel owner">
+        <div class="avatar" aria-hidden="true">J</div>
+        <p><span class="en"><b>Current maintainer: Joey.</b> EN MOU Live and MOU Backup run on Joey’s Google account; the website is hosted on Joey’s GitHub account (JoeyAJ). If someone else needs to take over, or you want your own copy, Joey can package all code and data and hand it over — just ask at any time.</span><span class="zh"><b>目前維護者：Joey。</b>EN MOU Live 和 MOU Backup 都在 Joey 的 Google 帳號下，網頁放在 Joey 的 GitHub 帳號（JoeyAJ）。如果需要由其他人接手，或想在自己的帳號另外複製一套，Joey 可以把所有程式碼和資料打包交給你們，請隨時告訴 Joey。</span></p>
+      </div>
+
+      <h3><span class="en">Components</span><span class="zh">系統元件</span></h3>
+      <div class="comp">
+        <div class="panel"><h4><span class="en">Office list</span><span class="zh">辦公室總表</span></h4><p class="where">Google Sheets · <code>1bQjCmDQguZesDrqG3Rl3ZwImnNCgM4cKN4efv1rSle0</code></p><p class="set"><span class="en">Owned by the English team; the maintainer needs view access.</span><span class="zh">英文組擁有，維護者需要檢視權限。</span></p></div>
+        <div class="panel"><h4>EN MOU Live</h4><p class="where"><span class="en">script.google.com standalone project, maintainer’s account · Code.gs v4</span><span class="zh">script.google.com 獨立專案，維護者帳號 · Code.gs v4</span></p><p class="set"><code>SHEET_ID</code> · <code>SHEET_NAME = 'All MOUs'</code> · <code>NUM_COLS = 18</code> · <code>STATUS_COL = 17</code>. <span class="en">Web app: execute as “Me”, access “Anyone”.</span><span class="zh">網頁應用程式：執行身分「我」，存取權「所有人」。</span></p></div>
+        <div class="panel"><h4><span class="en">Dashboard website</span><span class="zh">Dashboard 網頁</span></h4><p class="where"><span class="en">GitHub repo EN-MOU-Master--Woosong-University · index.html</span><span class="zh">GitHub 倉庫 EN-MOU-Master--Woosong-University · index.html</span></p><p class="set"><code>LIVE_API_URL</code> <span class="en">points to the /exec URL;</span><span class="zh">指向 /exec 網址；</span> <code>SHEET_ID</code> <span class="en">is only for the “↗ Sheet” link; a September 2026 snapshot is the fallback.</span><span class="zh">只用於「↗ Sheet」連結；內建 2026 年 9 月快照作為備援。</span></p></div>
+        <div class="panel"><h4>MOU Backup</h4><p class="where"><span class="en">script.google.com standalone project, maintainer’s account · BackupAllMOUs.gs</span><span class="zh">script.google.com 獨立專案，維護者帳號 · BackupAllMOUs.gs</span></p><p class="set"><span class="en">Daily trigger around 23:00 ·</span><span class="zh">每日觸發約 23:00 ·</span> <code>KEEP_COPIES = 30</code> · <span class="en">time zone Seoul</span><span class="zh">時區首爾</span></p></div>
+        <div class="panel retired"><h4><span class="en">Retired</span><span class="zh">已停用</span></h4><p class="where">Joey IR MOU List Updated 2026-10-For Dashboard · <code>1GLTtk…</code></p><p class="set"><span class="en">No longer read by any component.</span><span class="zh">不再被任何元件讀取。</span></p></div>
+      </div>
+
+      <h3><span class="en">Common tasks</span><span class="zh">常見維護操作</span></h3>
+      <details class="task-d"><summary><span class="en">Changing the EN MOU Live code</span><span class="zh">修改 EN MOU Live 程式碼</span></summary><p><span class="en">Save → run <code>testRead</code> → Deploy → Manage deployments → Edit → Version: New version → Deploy. Editing keeps the same /exec URL, so index.html stays unchanged. A “New deployment” changes the URL, and <code>LIVE_API_URL</code> must then be updated.</span><span class="zh">存檔 → 執行 <code>testRead</code> → 部署 → 管理部署作業 → 編輯 → 版本：新版本 → 部署。用「編輯」部署會保留同一個 /exec 網址，index.html 不用改；若用「新增部署作業」，網址會變，必須更新 <code>LIVE_API_URL</code>。</span></p></details>
+      <details class="task-d"><summary><span class="en">Changing the data source</span><span class="zh">更換資料來源</span></summary><p><span class="en">Update the ID in three places: <code>SHEET_ID</code> in Code.gs, <code>SOURCE_ID</code> in BackupAllMOUs.gs, and <code>SHEET_ID</code> in index.html.</span><span class="zh">同時修改三處 ID：Code.gs 的 <code>SHEET_ID</code>、BackupAllMOUs.gs 的 <code>SOURCE_ID</code>，以及 index.html 的 <code>SHEET_ID</code>。</span></p></details>
+      <details class="task-d"><summary><span class="en">The team needs to change columns A to R</span><span class="zh">英文組要調整 A 到 R 欄</span></summary><p><span class="en">First update <code>NUM_COLS</code> and <code>STATUS_COL</code> in Code.gs and the matching column reads in index.html, then let the team change the sheet.</span><span class="zh">先更新 Code.gs 的 <code>NUM_COLS</code>、<code>STATUS_COL</code> 以及 index.html 中對應的欄位讀取，再讓英文組改表。</span></p></details>
+      <details class="task-d"><summary><span class="en">Checking errors</span><span class="zh">查看錯誤</span></summary><p><span class="en">Both Apps Script projects list every run and its errors under Executions in the left sidebar.</span><span class="zh">兩個 Apps Script 專案左側的「執行項目」都有每次執行的紀錄和錯誤訊息。</span></p></details>
+      <details class="task-d"><summary><span class="en">Stopping the daily backup</span><span class="zh">停止每日備份</span></summary><p><span class="en">In the MOU Backup project, open Triggers (clock icon) and delete <code>backupAllMOUs</code>.</span><span class="zh">在 MOU Backup 專案的「觸發條件」（時鐘圖示）刪除 <code>backupAllMOUs</code>。</span></p></details>
+
+      <h3><span class="en">Handing over to a new maintainer</span><span class="zh">交接給新的維護者</span></h3>
+      <p class="intro" style="margin-bottom:10px"><span class="en">The new maintainer rebuilds both scripts on their own account, points the dashboard to the new EN MOU Live, and only then Joey’s versions are turned off. Tell Joey first; Joey prepares the package and completes it with you. Ticks are saved in this browser.</span><span class="zh">由新維護者用自己的帳號重新建立兩個腳本，讓 Dashboard 改讀新的 EN MOU Live，最後才停用 Joey 的版本。請先告訴 Joey，由 Joey 準備交接包並一起完成。勾選進度會保存在這個瀏覽器中。</span></p>
+      <div class="panel" style="padding:16px 18px">
+        <b><span class="en">The new maintainer needs</span><span class="zh">新維護者需要準備</span></b>
+        <ul class="needs">
+          <li><span class="en">A Google account (school account recommended) with view access to the office list</span><span class="zh">一個 Google 帳號（建議學校帳號），對辦公室總表有檢視權限</span></li>
+          <li><span class="en">A GitHub account with write access to the dashboard repo, or ready to receive a transfer</span><span class="zh">一個 GitHub 帳號，對 Dashboard 倉庫有寫入權限，或準備接收倉庫轉移</span></li>
+          <li><span class="en">Joey’s package: Code.gs, BackupAllMOUs.gs, index.html, this manual, and past backups if needed</span><span class="zh">Joey 的交接包：Code.gs、BackupAllMOUs.gs、index.html、本手冊，以及需要時的歷史備份</span></li>
+        </ul>
+        <div class="progress"><div class="bar"><span id="hoBar"></span></div><output id="hoOut">0 / 7</output></div>
+        <ol class="steps" id="hoSteps"></ol>
+        <p class="warnline"><span class="en"><b>GitHub:</b> adding the new maintainer as a collaborator keeps the dashboard URL. Transferring the repo to another account changes the URL, so everyone must be told the new address.</span><span class="zh"><b>關於 GitHub：</b>把新維護者加為協作者，Dashboard 網址不變；若把倉庫轉移到其他帳號，網址會改變，需要通知所有使用者新網址。</span></p>
+      </div>
+    </section>
+
+    <footer><span class="en">English Team MOU Dashboard manual · maintained by Joey (@NexAeon.Joey)</span><span class="zh">英文組 MOU Dashboard 手冊 · 維護者 Joey（@NexAeon.Joey）</span></footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var L='en';
+  function t(o){return o[L]||o.en}
+
+  /* ---------- language ---------- */
+  function setLang(l){
+    L=l==='zh'?'zh':'en';
+    root.setAttribute('data-lang',L);
+    root.setAttribute('lang',L==='zh'?'zh-Hant':'en');
+    document.querySelectorAll('[data-set-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.setLang===L))});
+    store.set('mou-manual-lang',L);
+    renderAll();
+  }
+  document.querySelectorAll('[data-set-lang]').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.setLang)})});
+
+  /* ---------- flow map ---------- */
+  var NODES={
+    source:{name:{en:'Office list · All MOUs',zh:'辦公室總表 · All MOUs'},text:{en:'IR MOU List Updated 2026-09, owned by the English team. Edit only the All MOUs tab; other tabs don’t affect the dashboard.',zh:'IR MOU List Updated 2026-09，由英文組擁有。只需在 All MOUs 分頁修改，其他分頁不影響 Dashboard。'}},
+    live:{name:{en:'EN MOU Live',zh:'EN MOU Live'},text:{en:'Checks All MOUs about every 15 seconds and sends the Active rows to the dashboard. It only needs view access to the office list.',zh:'約每 15 秒檢查一次 All MOUs，把 Active 的列傳給 Dashboard。只需要辦公室總表的檢視權限。'}},
+    dash:{name:{en:'EN MOU Dashboard',zh:'EN MOU Dashboard'},text:{en:'Shows rows whose column R is Active. Open pages update by themselves; no upload or refresh needed.',zh:'顯示 R 欄為 Active 的列。已打開的頁面會自動更新，不需要上傳或重新整理。'}},
+    backup:{name:{en:'MOU Backup',zh:'MOU Backup'},text:{en:'Runs every night around 23:00 and saves a full copy of All MOUs, including Inactive rows. Days without changes are skipped.',zh:'每天晚上約 23:00 執行，完整複製 All MOUs（包括 Inactive 的列）。沒有變動的日子會跳過。'}},
+    folder:{name:{en:'Drive “MOU Backups”',zh:'Drive「MOU Backups」'},text:{en:'Each backup is a separate spreadsheet, such as “All MOUs backup 2026-10-18 2300”. Older copies move to the trash and can be recovered for 30 days.',zh:'每份備份都是獨立的試算表，例如「All MOUs backup 2026-10-18 2300」。較舊的副本會移到垃圾桶，30 天內可救回。'}}
+  };
+  var curNode='source';
+  var nodeBtns=document.querySelectorAll('[data-node]');
+  nodeBtns.forEach(function(b){b.addEventListener('click',function(){curNode=b.dataset.node;renderNode()})});
+  function renderNode(){
+    nodeBtns.forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.node===curNode))});
+    var n=NODES[curNode],d=document.getElementById('nodeDetail');
+    d.innerHTML='';
+    var h=document.createElement('h4');h.textContent=t(n.name);
+    var p=document.createElement('p');p.textContent=t(n.text);
+    d.appendChild(h);d.appendChild(p);
+  }
+
+  /* ---------- simulator ---------- */
+  var START=[
+    {u:{en:'Example University A',zh:'範例大學 A'},c:{en:'Vietnam',zh:'越南'},s:'Active'},
+    {u:{en:'Example University B',zh:'範例大學 B'},c:{en:'China',zh:'中國'},s:'Active'},
+    {u:{en:'Example College C',zh:'範例學院 C'},c:{en:'USA',zh:'美國'},s:'Inactive'},
+    {u:{en:'Example University D',zh:'範例大學 D'},c:{en:'Japan',zh:'日本'},s:'Active'},
+    {u:{en:'Example Institute E',zh:'範例學院 E'},c:{en:'France',zh:'法國'},s:'Active'}
+  ];
+  var NEWROWS=[{u:{en:'New partner F',zh:'新合作學校 F'},c:{en:'Mongolia',zh:'蒙古'}},{u:{en:'New partner G',zh:'新合作學校 G'},c:{en:'Uzbekistan',zh:'烏茲別克'}},{u:{en:'New partner H',zh:'新合作學校 H'},c:{en:'Germany',zh:'德國'}}];
+  var rows,shown,simTimer=null,syncing=false,lastSync=Date.now();
+  function resetSim(){rows=START.map(function(r){return {u:r.u,c:r.c,s:r.s,isNew:false}});shown=active();syncing=false;clearTimeout(simTimer);lastSync=Date.now();renderSim()}
+  function active(){return rows.filter(function(r){return r.s==='Active'}).length}
+  function renderSim(){
+    var body=document.getElementById('simBody');body.innerHTML='';
+    rows.forEach(function(r,i){
+      var tr=document.createElement('tr');if(r.isNew)tr.className='new';
+      var a=document.createElement('td');a.textContent=t(r.u);
+      var b=document.createElement('td');b.textContent=t(r.c);
+      var c=document.createElement('td');
+      var btn=document.createElement('button');btn.type='button';btn.className='st '+(r.s==='Active'?'active':'inactive');btn.textContent=r.s;
+      btn.setAttribute('aria-label',(L==='zh'?'切換狀態：':'Toggle status: ')+t(r.u)+' — '+r.s);
+      btn.addEventListener('click',function(){r.s=r.s==='Active'?'Inactive':'Active';change()});
+      c.appendChild(btn);tr.appendChild(a);tr.appendChild(b);tr.appendChild(c);body.appendChild(tr);
+    });
+    document.getElementById('simCount').textContent=shown;
+    document.getElementById('simAdd').disabled=rows.length>=START.length+NEWROWS.length;
+    renderPill();
+  }
+  function renderPill(){
+    var p=document.getElementById('simPill');
+    if(syncing){p.className='pill warn busy';p.textContent=L==='zh'?'正在同步…（實際約 20 秒）':'Syncing… (about 20 s in real use)'}
+    else{var s=Math.max(0,Math.round((Date.now()-lastSync)/1000));p.className='pill ok';p.textContent='Live sync · '+(s<2?(L==='zh'?'剛剛':'just now'):s+'s ago')}
+  }
+  function change(){
+    syncing=true;renderSim();clearTimeout(simTimer);
+    var delay=window.matchMedia('(prefers-reduced-motion: reduce)').matches?300:1600;
+    simTimer=setTimeout(function(){syncing=false;lastSync=Date.now();animateCount(active())},delay);
+  }
+  function animateCount(target){
+    var el=document.getElementById('simCount');
+    if(shown===target){renderSim();return}
+    var step=target>shown?1:-1;
+    var tick=function(){shown+=step;el.textContent=shown;if(shown!==target){setTimeout(tick,120)}else{renderSim()}};
+    renderPill();setTimeout(tick,60);
+  }
+  document.getElementById('simAdd').addEventListener('click',function(){
+    var n=NEWROWS[rows.length-START.length];if(!n)return;
+    rows.push({u:n.u,c:n.c,s:'Active',isNew:true});change();
+  });
+  document.getElementById('simReset').addEventListener('click',resetSim);
+  setInterval(function(){if(!syncing)renderPill()},1000);
+
+  /* ---------- column map ---------- */
+  var USED='BEFGHIJMN'.split('');
+  var colWrap=document.getElementById('cols'),curCol='R';
+  var INFO={
+    used:{en:'is shown on the dashboard. Keep it in this position.',zh:'會顯示在 Dashboard 上，請保持在這個位置。'},
+    read:{en:'is read but not shown. Keep it in place anyway: moving it shifts every column after it.',zh:'會被讀取但不顯示。仍需保持位置，移動它會讓後面的欄位全部錯位。'},
+    status:{en:'is the status column. Write Active or Inactive; capitals and extra spaces don’t matter, but a misspelling is not counted.',zh:'是狀態欄。寫 Active 或 Inactive；大小寫和前後空格不影響，但拼錯就不會被計入。'},
+    free:{en:'and beyond: new columns go here. The dashboard ignores them.',zh:'及之後：新欄位加在這裡，Dashboard 不會讀取。'}
+  };
+  function kind(c){if(c==='R')return 'status';if(c==='S+')return 'free';return USED.indexOf(c)>=0?'used':'read'}
+  function buildCols(){
+    colWrap.innerHTML='';
+    'ABCDEFGHIJKLMNOPQR'.split('').concat(['S+']).forEach(function(c){
+      var b=document.createElement('button');b.type='button';var k=kind(c);
+      b.className='col'+(k==='used'?' used':k==='status'?' status':k==='free'?' free':'');
+      b.textContent=c==='S+'?'S→':c;b.setAttribute('aria-pressed',String(c===curCol));
+      b.setAttribute('aria-label',(L==='zh'?'欄位 ':'Column ')+(c==='S+'?'S':c));
+      b.addEventListener('click',function(){curCol=c;buildCols()});
+      colWrap.appendChild(b);
+    });
+    var k=kind(curCol),info=document.getElementById('colInfo');
+    info.innerHTML='';var b=document.createElement('b');b.textContent=(L==='zh'?'欄位 ':'Column ')+(curCol==='S+'?'S':curCol)+' ';
+    info.appendChild(b);info.appendChild(document.createTextNode(t(INFO[k])));
+  }
+
+  /* ---------- statuses ---------- */
+  var ST=[
+    {k:'ok',label:'Live sync · 8s ago',m:{en:'Normal. The dashboard shows the latest data from the office list.',zh:'正常，顯示的是辦公室總表的最新資料。'},d:{en:'Nothing.',zh:'不用做任何事。'}},
+    {k:'warn',label:'New data · Click to update',m:{en:'New data arrived while you were on the Search or Report page, so the update waits to keep what you typed.',zh:'你在搜尋或報表頁時有新資料，為了不清掉你輸入的內容而暫緩更新。'},d:{en:'Click the indicator, or switch to another page.',zh:'點一下指示，或切換到其他頁面。'}},
+    {k:'warn',label:'Showing last synced data · Updating…',m:{en:'The browser shows the data from the last sync while it connects for the latest.',zh:'先顯示瀏覽器中上次同步的資料，正在連線取得最新資料。'},d:{en:'Wait a few seconds; it usually turns green by itself.',zh:'稍等幾秒，通常會自動變成綠色。'}},
+    {k:'warn',label:'Snapshot data · Retry',m:{en:'Live data could not load, so the built-in September 2026 snapshot is shown. The status line shows “Snapshot Sep 2026” and the error.',zh:'讀不到即時資料，改為顯示內建的 2026 年 9 月快照。狀態列會顯示「Snapshot Sep 2026」和錯誤原因。'},d:{en:'Click Retry or “↺ Retry live”. If it keeps failing, see Troubleshooting.',zh:'點 Retry 或「↺ Retry live」；仍失敗請看疑難排解。'}},
+    {k:'bad',label:'Sync lost · Retry',m:{en:'Sync was interrupted, by the network or a problem with the data source.',zh:'同步中斷，可能是網路或資料來源出了問題。'},d:{en:'Click Retry. If it keeps failing, see Troubleshooting.',zh:'點 Retry；仍失敗請看疑難排解。'}}
+  ];
+  var curSt=0;
+  function renderStatus(){
+    var w=document.getElementById('statuses');w.innerHTML='';
+    ST.forEach(function(s,i){var b=document.createElement('button');b.type='button';b.className='pill '+s.k;b.textContent=s.label;b.setAttribute('aria-pressed',String(i===curSt));b.addEventListener('click',function(){curSt=i;renderStatus()});w.appendChild(b)});
+    var s=ST[curSt],d=document.getElementById('sDetail');d.innerHTML='';
+    [[{en:'What it means',zh:'代表什麼'},s.m],[{en:'What to do',zh:'需要做什麼'},s.d]].forEach(function(pair){
+      var box=document.createElement('div');var h=document.createElement('h4');h.textContent=t(pair[0]);var p=document.createElement('p');p.textContent=t(pair[1]);box.appendChild(h);box.appendChild(p);d.appendChild(box);
+    });
+  }
+
+  /* ---------- backup helper ---------- */
+  var SC=[
+    {l:1,t:{en:'A typo or a few wrong cells',zh:'打錯字或改錯幾個儲存格'}},
+    {l:1,t:{en:'Active and Inactive mixed up',zh:'Active 和 Inactive 改錯了'}},
+    {l:1,t:{en:'A few rows deleted',zh:'誤刪了幾列'}},
+    {l:1,t:{en:'Some data mixed up by sorting or pasting',zh:'排序或貼上時弄亂了部分資料'}},
+    {l:2,t:{en:'The file or the All MOUs tab is gone',zh:'檔案或 All MOUs 分頁不見了'}},
+    {l:2,t:{en:'The whole tab was overwritten',zh:'整個分頁被錯誤資料覆蓋'}},
+    {l:2,t:{en:'Many errors, found days later',zh:'很多地方改錯，幾天後才發現'}}
+  ];
+  var A1={which:{en:'Use layer 1: version history',zh:'使用第一層：版本記錄'},steps:[
+    {en:'In the office list, click File → Version history → See version history.',zh:'在辦公室總表點「檔案 → 版本記錄 → 查看版本記錄」。'},
+    {en:'Pick a point in time before the mistake; the changes since then are highlighted.',zh:'在右側選擇出錯前的時間點，畫面會標出和現在的差異。'},
+    {en:'Click Restore this version. To recover only some rows, choose Make a copy instead and copy the rows back.',zh:'點「還原這個版本」。如果只想取回部分資料，改點「建立副本」，再把需要的列複製回來。'}],
+    note:{en:'Restoring rolls back every later change, including correct ones. Tip: before a big update, use File → Version history → Name current version.',zh:'還原整個版本會連同之後正確的修改一起退回。小技巧：大量修改前，先用「檔案 → 版本記錄 → 為目前版本命名」。'}};
+  var A2={which:{en:'Use layer 2: daily backup files',zh:'使用第二層：每日備份檔案'},steps:[
+    {en:'Tell Joey roughly when the problem started.',zh:'告訴 Joey 大約什麼時候開始出問題。'},
+    {en:'Joey finds the backup from the day before in “MOU Backups” and shares it with you.',zh:'Joey 從「MOU Backups」找出出事前一天的備份，分享給英文組。'},
+    {en:'Open it, copy All MOUs (or just the rows you need), and paste it back into the office list.',zh:'打開備份檔，複製 All MOUs（或只複製需要的列），貼回辦公室總表。'},
+    {en:'Open the dashboard and check that the Active MOU count looks right.',zh:'打開 Dashboard，確認 Active MOU 筆數正常。'}],
+    note:{en:'Joey has view access only, so the English team pastes the data back.',zh:'Joey 只有檢視權限，所以需要由英文組把資料貼回。'}};
+  var curSc=-1;
+  function renderBackup(){
+    var w=document.getElementById('chips');w.innerHTML='';
+    SC.forEach(function(s,i){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t(s.t);b.setAttribute('aria-pressed',String(i===curSc));b.addEventListener('click',function(){curSc=i;renderBackup()});w.appendChild(b)});
+    if(curSc<0)return;
+    var a=SC[curSc].l===1?A1:A2,box=document.getElementById('answer');
+    box.className='panel answer'+(SC[curSc].l===2?' two':'');box.innerHTML='';
+    var h=document.createElement('p');h.className='which';h.textContent=t(a.which);box.appendChild(h);
+    var ol=document.createElement('ol');a.steps.forEach(function(s){var li=document.createElement('li');li.textContent=t(s);ol.appendChild(li)});box.appendChild(ol);
+    var n=document.createElement('p');n.className='note';n.textContent=t(a.note);box.appendChild(n);
+  }
+
+  /* ---------- FAQ ---------- */
+  var FAQ=[
+    {q:{en:'I edited data, but the dashboard didn’t change',zh:'改了資料，Dashboard 沒有變'},c:{en:'The edit was made in the retired Joey sheet, not the office list.',zh:'改到了已停用的 Joey 表，而不是辦公室總表。'},f:{en:'Check the file is IR MOU List Updated 2026-09, or open it from the dashboard’s “↗ Sheet” link.',zh:'確認檔名是 IR MOU List Updated 2026-09，或從 Dashboard 的「↗ Sheet」連結進入。'}},
+    {q:{en:'The indicator says New data · Click to update',zh:'指示顯示 New data · Click to update'},c:{en:'You are on the Search or Report page, so the update is waiting.',zh:'你正在搜尋或報表頁，更新暫緩。'},f:{en:'Click the indicator or switch pages.',zh:'點一下指示或切換頁面。'}},
+    {q:{en:'A new MOU doesn’t appear',zh:'新增的 MOU 沒有出現'},c:{en:'Column R is not Active, or is misspelled.',zh:'R 欄不是 Active，或拼錯。'},f:{en:'Set column R to Active.',zh:'把 R 欄改成 Active。'}},
+    {q:{en:'Columns look scrambled, e.g. dates under Country',zh:'欄位內容錯亂，例如國家欄出現日期'},c:{en:'A column between A and R was inserted, deleted or moved.',zh:'A 到 R 欄之間有欄位被插入、刪除或移動。'},f:{en:'Restore the column order with version history.',zh:'用版本記錄還原欄位順序。'}},
+    {q:{en:'Sync lost, or “Snapshot Sep 2026” with “Tab not found”',zh:'Sync lost，或顯示 Snapshot Sep 2026 加上 Tab not found'},c:{en:'The All MOUs tab was renamed.',zh:'All MOUs 分頁被改名。'},f:{en:'Rename the tab back to All MOUs.',zh:'把分頁名稱改回 All MOUs。'}},
+    {q:{en:'Sync lost with an error about permission',zh:'Sync lost，錯誤訊息提到權限'},c:{en:'Joey’s view access to the office list was removed.',zh:'Joey 對辦公室總表的檢視權限被移除。'},f:{en:'Share view access with Joey again.',zh:'重新分享檢視權限給 Joey。'}},
+    {q:{en:'The page looks like an old version',zh:'網頁看起來是舊版'},c:{en:'Browser cache.',zh:'瀏覽器快取。'},f:{en:'Hard-refresh: Ctrl + Shift + R (Windows) or Cmd + Shift + R (Mac).',zh:'強制重新整理：Ctrl + Shift + R（Windows）或 Cmd + Shift + R（Mac）。'}}
+  ];
+  function renderFaq(){
+    var w=document.getElementById('faq'),open=[];
+    w.querySelectorAll('details').forEach(function(d,i){if(d.open)open.push(i)});
+    w.innerHTML='';
+    FAQ.forEach(function(x,i){
+      var d=document.createElement('details');d.className='q';if(open.indexOf(i)>=0)d.open=true;
+      var s=document.createElement('summary');s.textContent=t(x.q);d.appendChild(s);
+      var dl=document.createElement('dl');dl.className='a';
+      [[{en:'Likely cause',zh:'可能原因'},x.c],[{en:'Fix',zh:'處理方式'},x.f]].forEach(function(p){var dt=document.createElement('dt');dt.textContent=t(p[0]);var dd=document.createElement('dd');dd.textContent=t(p[1]);dl.appendChild(dt);dl.appendChild(dd)});
+      d.appendChild(dl);w.appendChild(d);
+    });
+  }
+
+  /* ---------- handover checklist ---------- */
+  var HO=[
+    {b:{en:'Create EN MOU Live',zh:'建立 EN MOU Live'},d:{en:'On script.google.com with the new account: new project, paste Code.gs, save, run testRead and check the log reads the office list.',zh:'用新帳號在 script.google.com 新建專案，貼上 Code.gs 存檔，執行 testRead 確認讀得到辦公室總表。'}},
+    {b:{en:'Deploy',zh:'部署'},d:{en:'Deploy → New deployment → Web app, execute as “Me”, access “Anyone”. Copy the /exec URL.',zh:'部署 → 新增部署作業 → 網頁應用程式，執行身分「我」、存取權「所有人」，複製 /exec 網址。'}},
+    {b:{en:'Update the dashboard',zh:'更新 Dashboard'},d:{en:'Put the new /exec URL in LIVE_API_URL in index.html and upload to GitHub. Check for green Live sync and the right count.',zh:'把新的 /exec 網址填入 index.html 的 LIVE_API_URL，上傳到 GitHub，確認顯示綠色 Live sync 且筆數正確。'}},
+    {b:{en:'Create MOU Backup',zh:'建立 MOU Backup'},d:{en:'New project, paste BackupAllMOUs.gs, set time zone to Seoul, run installBackupTrigger. Check “MOU Backups” appears with a first backup.',zh:'新建專案，貼上 BackupAllMOUs.gs，時區設為首爾，執行 installBackupTrigger，確認出現「MOU Backups」和第一份備份。'}},
+    {b:{en:'Transfer past backups (optional)',zh:'轉移舊備份（選用）'},d:{en:'Joey shares or transfers the “MOU Backups” folder.',zh:'請 Joey 分享或轉移「MOU Backups」資料夾。'}},
+    {b:{en:'Turn off Joey’s versions',zh:'停用 Joey 的版本'},d:{en:'Only after step 3 works: Joey archives his old deployment and deletes his backup trigger, so nothing runs twice.',zh:'第 3 步確認正常後才進行：Joey 封存舊部署並刪除備份觸發條件，避免重複執行。'}},
+    {b:{en:'Update this manual',zh:'更新本手冊'},d:{en:'Replace Joey with the new maintainer’s name, and remind the team to keep the new maintainer’s view access.',zh:'把手冊中的 Joey 改為新維護者的名字，並提醒英文組保留新維護者的檢視權限。'}}
+  ];
+  var done={};try{done=JSON.parse(store.get('mou-manual-handover')||'{}')||{}}catch(e){done={}}
+  function renderHo(){
+    var ol=document.getElementById('hoSteps');ol.innerHTML='';var n=0;
+    HO.forEach(function(s,i){
+      var li=document.createElement('li');if(done[i]){li.className='done';n++}
+      var id='ho'+i;var cb=document.createElement('input');cb.type='checkbox';cb.id=id;cb.checked=!!done[i];
+      cb.addEventListener('change',function(){done[i]=cb.checked;store.set('mou-manual-handover',JSON.stringify(done));renderHo()});
+      var num=document.createElement('span');num.className='n';num.textContent=i+1;num.setAttribute('aria-hidden','true');
+      var lab=document.createElement('label');lab.htmlFor=id;var b=document.createElement('b');b.textContent=t(s.b);lab.appendChild(b);lab.appendChild(document.createElement('br'));lab.appendChild(document.createTextNode(t(s.d)));
+      li.appendChild(cb);li.appendChild(num);li.appendChild(lab);ol.appendChild(li);
+    });
+    document.getElementById('hoBar').style.width=(n/HO.length*100)+'%';
+    document.getElementById('hoOut').textContent=n+' / '+HO.length;
+  }
+
+  /* ---------- nav highlight ---------- */
+  var links=document.querySelectorAll('.rail a');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){var on=a.getAttribute('href')==='#'+e.target.id;a.classList.toggle('on',on);if(on&&a.scrollIntoView&&window.innerWidth<=900){a.scrollIntoView({block:'nearest',inline:'center'})}})}})},{rootMargin:'-40% 0px -55% 0px'});
+    document.querySelectorAll('section.s').forEach(function(s){io.observe(s)});
+  }
+
+  function renderAll(){renderNode();renderSim();buildCols();renderStatus();renderBackup();renderFaq();renderHo()}
+  resetSim();
+  setLang(store.get('mou-manual-lang')||'en');
+})();
+</script>
+</body>
+</html>
