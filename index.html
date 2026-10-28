@@ -822,6 +822,7 @@ function buildSearchPage(){
       <button class="clear-btn" onclick="clearSearch()">Clear</button>
     </div>
     <div class="results-meta" id="sq-meta"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="print-btn" onclick="downloadSearchCSV()">⬇ Download CSV</button></div>
     <div class="results-table-wrap"><table class="rt"><thead><tr>
       <th class="sort-hdr" onclick="setSort('n')">Institution <span class="sort-arrow" id="sa-n"></span></th>
       <th class="sort-hdr" onclick="setSort('co')">Country <span class="sort-arrow" id="sa-co"></span></th>
@@ -1023,6 +1024,37 @@ function getFilteredSR() {
   });
 }
 
+/* ── CSV EXPORT (shared by Report Generator and Search) ── */
+let rptLastRows = [];
+const CSV_HEADERS = ['No','Institution','Country','Region','Campus','Type','Signed Date','Signed Year','End Date','End Year','Term'];
+function buildMOUCSV(rows) {
+  const body = rows.map((r,i) => [i+1, r.n, r.co, r.rg, r.ca, r.ty, r.sd, r.sy, r.ed, r.ey, r.ec]);
+  return [CSV_HEADERS, ...body]
+    .map(row => row.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(','))
+    .join('\r\n');
+}
+function saveCSV(rows, name) {
+  if (!rows.length) { alert('No MOUs to export.'); return; }
+  const blob = new Blob(['\uFEFF' + buildMOUCSV(rows)], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+function downloadReportCSV() {
+  saveCSV(rptLastRows, `en_mou_report_${rptCur}`);
+}
+function downloadSearchCSV() {
+  const {results, sortKey, sortDir} = ss;
+  const sorted = [...results].sort((a,b) => {
+    const av=(a[sortKey]||'').toString().toLowerCase(), bv=(b[sortKey]||'').toString().toLowerCase();
+    return av<bv ? -sortDir : av>bv ? sortDir : 0;
+  });
+  saveCSV(sorted, 'en_mou_search');
+}
+
 function filterLabel() {
   const parts = [];
   const countries = getChipValues('country');
@@ -1050,6 +1082,7 @@ function generateReport() {
 }
 
 function rptWrap(title, subtitle, body, rows) {
+  rptLastRows = rows || getFilteredSR();
   const now = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const includeList = document.getElementById('gf-include-list')?.checked;
   let listSection = '';
@@ -1084,6 +1117,7 @@ function rptWrap(title, subtitle, body, rows) {
           <h3>${title}</h3>
           <div class="rph-meta">${subtitle} &nbsp;·&nbsp; Generated ${now} &nbsp;·&nbsp; Woosong University IR</div>
         </div>
+        <button class="print-btn" onclick="downloadReportCSV()">⬇ Download CSV</button>
       </div>
       <div class="rpt-body">${body}${listSection}</div>
     </div>`;
@@ -1448,6 +1482,7 @@ function printReport() {
     tr:last-child td{border-bottom:none}
     .num{font-weight:700;text-align:right}
     .rpt-bar-cell{display:flex;align-items:center;gap:5px}
+    button{display:none}
     .rpt-bar-bg{flex:1;height:5px;background:#e2ddd5;border-radius:2px;overflow:hidden;min-width:40px}
     .rpt-bar-fill{height:100%;border-radius:2px}
     .rpt-preview-hdr{margin-bottom:12px}
